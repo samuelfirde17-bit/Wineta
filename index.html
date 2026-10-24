@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background-color: #f4f4f9; text-align: center; margin: 0; padding: 15px; color: #333; }
+        body { background-color: #f4f4f9; text-align: center; margin: 0; padding: 15px; color: #333; padding-bottom: 60px; }
 
         .card { background: #ffffff; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: left; }
         
@@ -86,13 +86,32 @@
 
     <script>
         const tg = window.Telegram ? window.Telegram.WebApp : null;
-        if (tg) tg.expand();
+        if (tg) {
+            tg.expand();
+            // 🟢 የቴሌግራም ኦፊሴላዊ ዋና ቁልፍ (MainButton) ከስር ሁልጊዜ እንዲታይ ይደረጋል
+            if (tg.MainButton) {
+                tg.MainButton.text = "✅ ባላንስ አስቀምጥና ውጣ";
+                tg.MainButton.color = "#27ae60";
+                tg.MainButton.textColor = "#ffffff";
+                tg.MainButton.show();
+                tg.MainButton.onClick(function () {
+                    exitToBot();
+                });
+            }
+        }
 
         const urlParams = new URLSearchParams(window.location.search);
         const urlBal = urlParams.get('bal');
+        let savedBal = parseInt(localStorage.getItem('win_balance')) || 0;
+        
+        let userBalance = savedBal;
         if (urlBal !== null) {
-            localStorage.setItem('win_balance', urlBal);
+            let parsedUrlBal = parseInt(urlBal);
+            if (parsedUrlBal > savedBal) {
+                userBalance = parsedUrlBal;
+            }
         }
+        localStorage.setItem('win_balance', userBalance);
 
         const tgUser = tg?.initDataUnsafe?.user;
         let currentUser = {
@@ -100,7 +119,6 @@
             name: tgUser ? (tgUser.username ? `@${tgUser.username}` : (tgUser.first_name || 'ተጫዋች')) : 'ተጫዋች-ሞባይል'
         };
 
-        let userBalance = parseInt(localStorage.getItem('win_balance')) || 0;
         let selectedPrice = 50;
         let selectedRoomMaxPlayers = 20;
         let selectedTicket = null;
@@ -120,6 +138,16 @@
                 document.getElementById('menuUserName').innerText = currentUser.name;
                 document.getElementById('menuUserBalance').innerText = `ባላንስ: ${userBalance} ብር`;
                 localStorage.setItem('win_balance', userBalance);
+            }
+        }
+
+        function exitToBot() {
+            localStorage.setItem('win_balance', userBalance);
+            if (tg && tg.sendData) {
+                tg.sendData(JSON.stringify({ type: 'update_balance', balance: userBalance }));
+            } else {
+                alert('ባላንስዎ: ' + userBalance + ' ብር ተቀምጧል።');
+                if (tg && tg.close) tg.close();
             }
         }
 
@@ -223,15 +251,12 @@
                 return;
             }
 
-            // ባላንስ መቀነስ
             userBalance -= selectedPrice;
             updateUserDataUI();
 
-            // እጣ መመዝገብ
             room.tickets[selectedTicket] = { userId: String(currentUser.id), userName: currentUser.name };
             let boughtCount = Object.keys(room.tickets).length;
 
-            // እጣ ማውጣት
             if (boughtCount >= selectedRoomMaxPlayers) {
                 let boughtNumbers = Object.keys(room.tickets);
                 let shuffled = [...boughtNumbers].sort(() => 0.5 - Math.random());
@@ -258,7 +283,6 @@
 
                 alert(resultMsg);
 
-                // ክፍሉን እንደገና ባዶ ማድረግ
                 roomsData[roomId] = { tickets: {} };
             } else {
                 alert(`እጣ ቁጥር #${selectedTicket} በ ${selectedPrice} ብር በስኬት ተይዟል!\nየተያዙ እጣዎች: ${boughtCount}/${selectedRoomMaxPlayers}`);
