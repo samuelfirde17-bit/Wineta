@@ -30,17 +30,8 @@
 </head>
 <body>
 
-    <!-- 1. REGISTRATION / WELCOME VIEW -->
-    <div id="view-register" class="view active">
-        <div style="margin-top: 40px;">
-            <h2>🎉 እንኳን ወደ Win እጣ በደህና መጡ!</h2>
-            <p style="color: #666; font-size: 14px; margin-bottom: 25px;">እጣዎችን በመግዛት አስደናቂ ሽልማቶችን ያሸንፉ። ለመጀመር እባክዎ ቁጥርዎን ያጋሩ።</p>
-            <button class="btn btn-success" onclick="registerUser()">📱 ኑካ/ስልክ ቁጥር አጋራ (Share Contact)</button>
-        </div>
-    </div>
-
-    <!-- 2. MAIN MENU VIEW -->
-    <div id="view-menu" class="view">
+    <!-- MAIN MENU VIEW (ቀጥታ የሚከፈተው ዋናው ገጽ) -->
+    <div id="view-menu" class="view active">
         <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <div id="menuUserName" style="font-weight: bold; font-size: 16px;">ተጫዋች</div>
@@ -96,43 +87,33 @@
         const tg = window.Telegram ? window.Telegram.WebApp : null;
         if (tg) tg.expand();
 
-        let currentUser = JSON.parse(localStorage.getItem('win_user-')) || null;
-        let userBalance = parseInt(localStorage.getItem('win_balance-')) || 0;
+        // ከቦቱ የሚመጣውን ባላንስ መቀበያ
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlBal = urlParams.get('bal');
+        if (urlBal !== null) {
+            localStorage.setItem('win_balance', urlBal);
+        }
+
+        // የቴሌግራም ተጠቃሚ መረጃን ማንበብ
+        const tgUser = tg?.initDataUnsafe?.user;
+        let currentUser = {
+            id: tgUser ? tgUser.id : 'user-' + Math.floor(Math.random() * 10000),
+            name: tgUser ? (tgUser.username ? `@${tgUser.username}` : (tgUser.first_name || 'ተጫዋች')) : 'ተጫዋች-ሞባይል'
+        };
+
+        let userBalance = parseInt(localStorage.getItem('win_balance')) || 0;
         let selectedPrice = 50;
         let selectedRoomMaxPlayers = 20;
         let selectedTicket = null;
 
         window.onload = function() {
-            if (currentUser) {
-                switchView('view-menu');
-                updateUserDataUI();
-            } else {
-                switchView('view-register');
-            }
+            switchView('view-menu'); // ቀጥታ ወደ ዋናው ሜኑ ይወስዳል
+            updateUserDataUI();
         };
 
         function switchView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
-        }
-
-        function registerUser() {
-            try {
-                const tgUser = tg?.initDataUnsafe?.user;
-                currentUser = {
-                    id: tgUser ? tgUser.id : 'user-' + Math.floor(Math.random() * 10000),
-                    name: tgUser ? (tgUser.username ? `@${tgUser.username}` : (tgUser.first_name || 'ተጫዋች')) : 'ተጫዋች-ሞባይል'
-                };
-                localStorage.setItem('win_user', JSON.stringify(currentUser));
-                updateUserDataUI();
-                switchView('view-menu');
-                alert(`እንኳን ደህና መጡ ${currentUser.name}! ምዝገባዎ ተጠናቋል።`);
-            } catch (e) {
-                currentUser = { id: 'user-' + Math.floor(Math.random() * 10000), name: 'ተጫዋች-ሞባይል' };
-                localStorage.setItem('win_user', JSON.stringify(currentUser));
-                updateUserDataUI();
-                switchView('view-menu');
-            }
         }
 
         function updateUserDataUI() {
@@ -233,7 +214,7 @@
             let room = roomsData[roomId];
 
             if (userBalance < selectedPrice) {
-                alert('ባላንስዎ በቂ አይደለም!');
+                alert('ባላንስዎ በቂ አይደለም! እባክዎን በመጀመሪያ ዲፖዚት ያድርጉ።');
                 return;
             }
 
@@ -243,15 +224,15 @@
                 return;
             }
 
-            // 1. ባላንስ መቀነስ
+            // ባላንስ መቀነስ
             userBalance -= selectedPrice;
             updateUserDataUI();
 
-            // 2. እጣ መመዝገብ
+            // እጣ መመዝገብ
             room.tickets[selectedTicket] = { userId: currentUser.id, userName: currentUser.name };
             let boughtCount = Object.keys(room.tickets).length;
 
-            // 3. እጣ ማውጣት (የተያዙት እጣዎች ብዛት ከክፍሉ ከተወሰነው ብዛት ጋር ሲኩል)
+            // እጣ ማውጣት
             if (boughtCount >= selectedRoomMaxPlayers) {
                 let boughtNumbers = Object.keys(room.tickets);
                 let shuffled = [...boughtNumbers].sort(() => 0.5 - Math.random());
