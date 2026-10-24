@@ -96,8 +96,8 @@
         const tg = window.Telegram ? window.Telegram.WebApp : null;
         if (tg) tg.expand();
 
-        let currentUser = JSON.parse(localStorage.getItem('win_user')) || null;
-        let userBalance = parseInt(localStorage.getItem('win_balance')) || 1000;
+        let currentUser = JSON.parse(localStorage.getItem('win_user-')) || null;
+        let userBalance = parseInt(localStorage.getItem('win_balance-')) || 0;
         let selectedPrice = 50;
         let selectedRoomMaxPlayers = 20;
         let selectedTicket = null;
