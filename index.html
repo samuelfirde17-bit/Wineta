@@ -30,7 +30,7 @@
 </head>
 <body>
 
-    <!-- 🟢 ቋሚ የተጠቃሚ መረጃ እና ባላንስ ማሳያ (ሁልጊዜ ከላይ ይታያል) -->
+    <!-- ቋሚ የተጠቃሚ መረጃ እና ባላንስ ማሳያ -->
     <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
         <div>
             <div id="menuUserName" style="font-weight: bold; font-size: 16px;">ተጫዋች</div>
@@ -96,7 +96,7 @@
 
         const tgUser = tg?.initDataUnsafe?.user;
         let currentUser = {
-            id: tgUser ? tgUser.id : 'user-' + Math.floor(Math.random() * 10000),
+            id: tgUser ? String(tgUser.id) : 'user-' + Math.floor(Math.random() * 10000),
             name: tgUser ? (tgUser.username ? `@${tgUser.username}` : (tgUser.first_name || 'ተጫዋች')) : 'ተጫዋች-ሞባይል'
         };
 
@@ -120,13 +120,6 @@
                 document.getElementById('menuUserName').innerText = currentUser.name;
                 document.getElementById('menuUserBalance').innerText = `ባላንስ: ${userBalance} ብር`;
                 localStorage.setItem('win_balance', userBalance);
-
-                // 🟢 አዲሱን ባላንስ ወደ ቴሌግራም ቦት መላክ
-                if (tg && tg.sendData) {
-                    try {
-                        tg.sendData(JSON.stringify({ type: 'update_balance', balance: userBalance }));
-                    } catch(e) {}
-                }
             }
         }
 
@@ -235,7 +228,7 @@
             updateUserDataUI();
 
             // እጣ መመዝገብ
-            room.tickets[selectedTicket] = { userId: currentUser.id, userName: currentUser.name };
+            room.tickets[selectedTicket] = { userId: String(currentUser.id), userName: currentUser.name };
             let boughtCount = Object.keys(room.tickets).length;
 
             // እጣ ማውጣት
@@ -252,9 +245,9 @@
                 let w2 = room.tickets[shuffled[1]] || w1;
                 let w3 = room.tickets[shuffled[2]] || w1;
 
-                if (w1.userId === currentUser.id) userBalance += p1stAmt;
-                if (w2.userId === currentUser.id) userBalance += p2ndAmt;
-                if (w3.userId === currentUser.id) userBalance += p3rdAmt;
+                if (String(w1.userId) === String(currentUser.id)) userBalance += p1stAmt;
+                if (String(w2.userId) === String(currentUser.id)) userBalance += p2ndAmt;
+                if (String(w3.userId) === String(currentUser.id)) userBalance += p3rdAmt;
 
                 updateUserDataUI();
 
