@@ -13,22 +13,19 @@
         
         .btn { width: 100%; padding: 14px; font-size: 16px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         .btn-success { background: #27ae60; }
-        .btn-danger { background: #e74c3c; }
         .btn-back { background: #e0e0e0; color: #333; padding: 8px 15px; width: auto; font-size: 13px; float: left; margin-bottom: 10px; }
 
         .view { display: none; }
         .view.active { display: block; }
 
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .menu-btn { background: #fff; border: 2px solid #3498db; color: #3498db; padding: 20px 10px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; text-align: center; }
+        .menu-btn { background: #fff; border: 2px solid #3498db; color: #3498db; padding: 25px 10px; border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer; text-align: center; }
         .menu-btn:active { background: #3498db; color: white; }
 
         .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 15px; }
         .ticket { padding: 8px 0; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; text-align: center; }
         .ticket.taken { background: #e74c3c; color: white; cursor: not-allowed; border-color: #c0392b; }
         .ticket.selected { background: #2ecc71; color: white; border-color: #27ae60; }
-
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -49,16 +46,11 @@
                 <div id="menuUserName" style="font-weight: bold; font-size: 16px;">ተጫዋች</div>
                 <div id="menuUserBalance" style="color: #27ae60; font-size: 14px; font-weight: bold; margin-top: 4px;">ባላንስ: 0 ብር</div>
             </div>
-            <button class="btn" style="width: auto; padding: 8px 12px; font-size: 13px; margin:0;" onclick="switchView('view-deposit')">ዲፖዚት</button>
         </div>
 
-        <h3 style="text-align: left; margin: 15px 0 5px 0;">ዋና ዋና ምረጮች (Menu)</h3>
+        <h3 style="text-align: left; margin: 25px 0 10px 0;">ዋና ምረጭ</h3>
         <div class="menu-grid">
-            <div class="menu-btn" onclick="switchView('view-prices')">🎮 Play እጣ</div>
-            <div class="menu-btn" onclick="switchView('view-deposit')">💳 Deposit</div>
-            <div class="menu-btn" onclick="switchView('view-withdraw')">💸 Withdraw</div>
-            <div class="menu-btn" onclick="showBalanceAlert()">💰 Balance</div>
-            <div class="menu-btn" style="grid-column: span 2;" onclick="switchView('view-support')">☎️ Support (Sports Team)</div>
+            <div class="menu-btn" style="grid-column: span 2; background: #2980b9; color: white;" onclick="switchView('view-prices')">🎮 Play እጣ</div>
         </div>
     </div>
 
@@ -71,6 +63,8 @@
             <div class="menu-btn" onclick="selectPrice(50)">50 ብር</div>
             <div class="menu-btn" onclick="selectPrice(100)">100 ብር</div>
             <div class="menu-btn" onclick="selectPrice(200)">200 ብር</div>
+            <div class="menu-btn" onclick="selectPrice(300)">300 ብር</div>
+            <div class="menu-btn" onclick="selectPrice(400)">400 ብር</div>
             <div class="menu-btn" onclick="selectPrice(500)">500 ብር</div>
         </div>
     </div>
@@ -98,75 +92,12 @@
         <button class="btn btn-success" onclick="buyTicket()">እጣ ቁረጥ</button>
     </div>
 
-    <!-- 4. DEPOSIT VIEW -->
-    <div id="view-deposit" class="view">
-        <button class="btn btn-back" onclick="switchView('view-menu')">← ተመለስ</button>
-        <div style="clear: both;"></div>
-        <h3>💳 ገንዘብ ማስገቢያ (Deposit)</h3>
-        <p style="font-size: 13px; color: #555;">የክፍያ ዘዴ ይምረጡ፡</p>
-        
-        <select id="depositMethod" onchange="showDepositDetails()">
-            <option value="">-- ዘዴ ይምረጡ --</option>
-            <option value="telebirr">Telebirr</option>
-            <option value="cbe_birr">CBE Birr</option>
-            <option value="cbe">CBE (ባንክ)</option>
-            <option value="boa">BoA (ባንክ)</option>
-        </select>
-
-        <div id="depositDetailsCard" class="card" style="display:none; text-align: center; background: #eaf2f8;">
-            <p style="font-size: 13px; margin: 0 0 5px 0;">ገንዘብ የሚያስተላልፉበት ቁጥር/አካውንት:</p>
-            <h2 id="rotatingAccountNumber" style="color: #2980b9; margin: 5px 0; font-family: monospace;"></h2>
-            <p style="font-size: 12px; color: #e74c3c;">⚠️ ገንዘብ ከላኩ በኋላ የክፍያ ስክሪንሾት (Screenshot) ያስገቡ።</p>
-        </div>
-
-        <p style="font-size: 13px; margin-top: 15px;">ብር አስገብተው ካልገባልዎት በእኛ በኩል ለማነጋገር፡ <a href="https://t.me/sam3ifj" target="_blank" style="color: #3498db; font-weight: bold;">@sam3ifj</a></p>
-    </div>
-
-    <!-- 5. WITHDRAW VIEW -->
-    <div id="view-withdraw" class="view">
-        <button class="btn btn-back" onclick="switchView('view-menu')">← ተመለስ</button>
-        <div style="clear: both;"></div>
-        <h3>💸 ገንዘብ ማውጫ (Withdraw)</h3>
-        
-        <div class="card">
-            <label style="font-size: 13px; font-weight: bold;">ማውጣት የሚፈልጉት የብር መጠን:</label>
-            <input type="number" id="wAmount" placeholder="ለምሳሌ: 500">
-
-            <label style="font-size: 13px; font-weight: bold;">የክፍያ ዘዴ:</label>
-            <select id="wMethod">
-                <option value="Telebirr">Telebirr</option>
-                <option value="CBE Birr">CBE Birr</option>
-                <option value="CBE">CBE</option>
-                <option value="BoA">BoA</option>
-            </select>
-
-            <label style="font-size: 13px; font-weight: bold;">አካውንት ባለቤት ስም:</label>
-            <input type="text" id="wName" placeholder="ሙሉ ስምዎ">
-
-            <label style="font-size: 13px; font-weight: bold;">አካውንት ቁጥር ወይም ስልክ ቁጥር:</label>
-            <input type="text" id="wAccount" placeholder="ቁጥር ያስገቡ">
-
-            <button class="btn btn-success" onclick="submitWithdraw()">ቀጥል (Confirm)</button>
-        </div>
-    </div>
-
-    <!-- 7. SUPPORT VIEW -->
-    <div id="view-support" class="view">
-        <button class="btn btn-back" onclick="switchView('view-menu')">← ተመለስ</button>
-        <div style="clear: both;"></div>
-        <h3>☎️ የደንበኞች እርዳታ (Support)</h3>
-        <div class="card" style="text-align: center; padding: 25px;">
-            <p>ለማንኛውም ጥያቄ ወይም ድጋፍ በቴሌግራም ማግኘት ይችላሉ፡</p>
-            <h3 style="color: #3498db;"><a href="https://t.me/sam3ifj" target="_blank" style="text-decoration: none; color: inherit;">@sam3ifj</a></h3>
-        </div>
-    </div>
-
     <script>
         const tg = window.Telegram ? window.Telegram.WebApp : null;
         if (tg) tg.expand();
 
         let currentUser = JSON.parse(localStorage.getItem('win_user')) || null;
-        let userBalance = parseInt(localStorage.getItem('win_balance')) || 500;
+        let userBalance = parseInt(localStorage.getItem('win_balance')) || 1000;
         let selectedPrice = 50;
         let selectedRoomMaxPlayers = 20;
         let selectedTicket = null;
@@ -185,25 +116,19 @@
             document.getElementById(viewId).classList.add('active');
         }
 
-        // የተስተካከለው የሎጊን/ምዝገባ ፋንክሽን
         function registerUser() {
             try {
                 const tgUser = tg?.initDataUnsafe?.user;
-                
                 currentUser = {
                     id: tgUser ? tgUser.id : 'user-' + Math.floor(Math.random() * 10000),
                     name: tgUser ? (tgUser.username ? `@${tgUser.username}` : (tgUser.first_name || 'ተጫዋች')) : 'ተጫዋች-ሞባይል'
                 };
-
                 localStorage.setItem('win_user', JSON.stringify(currentUser));
                 updateUserDataUI();
                 switchView('view-menu');
                 alert(`እንኳን ደህና መጡ ${currentUser.name}! ምዝገባዎ ተጠናቋል።`);
             } catch (e) {
-                currentUser = {
-                    id: 'user-' + Math.floor(Math.random() * 10000),
-                    name: 'ተጫዋች-ሞባይል'
-                };
+                currentUser = { id: 'user-' + Math.floor(Math.random() * 10000), name: 'ተጫዋች-ሞባይል' };
                 localStorage.setItem('win_user', JSON.stringify(currentUser));
                 updateUserDataUI();
                 switchView('view-menu');
@@ -218,10 +143,6 @@
             }
         }
 
-        function showBalanceAlert() {
-            alert(`የአሁን ባላንስዎ: ${userBalance} ብር ነው።`);
-        }
-
         function selectPrice(price) {
             selectedPrice = price;
             document.getElementById('roomSelectionTitle').innerText = `የእጣ ዋጋ: ${price} ብር - ክፍል ይምረጡ`;
@@ -230,7 +151,7 @@
             container.innerHTML = '';
 
             const rooms = [
-                { maxPlayers: 2, name: '20 ተጫዋች ያለው ክፍል (ለሙከራ)' },
+                { maxPlayers: 2, name: '2 እጣ የሚይዝ ክፍል (ለፈጣን ሙከራ)' },
                 { maxPlayers: 20, name: '20 ተጫዋች ያለው ክፍል (100 እጣ)' },
                 { maxPlayers: 50, name: '50 ተጫዋች ያለው ክፍል (100 እጣ)' },
                 { maxPlayers: 100, name: '100 ተጫዋች ያለው ክፍል (100 እጣ)' }
@@ -256,36 +177,36 @@
             let roomId = `room_${selectedPrice}_${maxPlayers}`;
             let roomsData = JSON.parse(localStorage.getItem('win_rooms')) || {};
             if (!roomsData[roomId]) {
-                roomsData[roomId] = { tickets: {}, players: [] };
+                roomsData[roomId] = { tickets: {} };
                 localStorage.setItem('win_rooms', JSON.stringify(roomsData));
             }
 
             document.getElementById('gameRoomTitle').innerText = roomName;
             
             let totalPool = selectedPrice * maxPlayers;
-            let p1st = totalPool * 0.60;
-            let p2nd = totalPool * 0.15;
-            let p3rd = totalPool * 0.05;
+            let p1st = Math.round(totalPool * 0.60);
+            let p2nd = Math.round(totalPool * 0.15);
+            let p3rd = Math.round(totalPool * 0.05);
 
             document.getElementById('gamePoolInfo').innerText = `ጠቅላላ ገቢ (Pool): ${totalPool} ብር`;
             document.getElementById('gamePrizesInfo').innerHTML = 
-                `🥇 <b>1ኛ እጣ:</b> ${p1st} ብር<br>` +
-                `🥈 <b>2ኛ እጣ:</b> ${p2nd} ብር<br>` +
-                `🥉 <b>3ኛ እጣ:</b> ${p3rd} ብር`;
+                `🥇 <b>1ኛ እጣ (60%):</b> ${p1st} ብር<br>` +
+                `🥈 <b>2ኛ እጣ (15%):</b> ${p2nd} ብр<br>` +
+                `🥉 <b>3ኛ እጣ (5%):</b> ${p3rd} ብር`;
 
             loadTicketGrid(roomId);
             switchView('view-game');
         }
 
         function loadTicketGrid(roomId) {
-            let roomsData = JSON.parse(localStorage.getItem('win_rooms'));
-            let room = roomsData[roomId];
+            let roomsData = JSON.parse(localStorage.getItem('win_rooms')) || {};
+            let room = roomsData[roomId] || { tickets: {} };
             let grid = document.getElementById('ticketGrid');
             grid.innerHTML = '';
 
             for (let i = 1; i <= 100; i++) {
                 let btn = document.createElement('div');
-                let isTaken = room.tickets[i] ? true : false;
+                let isTaken = room.tickets && room.tickets[i] ? true : false;
                 btn.className = 'ticket' + (isTaken ? ' taken' : '');
                 btn.innerText = i;
                 if (!isTaken) {
@@ -305,11 +226,14 @@
             if (!selectedTicket) return alert('እባክዎን የእጣ ቁጥር ይምረጡ!');
 
             let roomId = `room_${selectedPrice}_${selectedRoomMaxPlayers}`;
-            let roomsData = JSON.parse(localStorage.getItem('win_rooms'));
+            let roomsData = JSON.parse(localStorage.getItem('win_rooms')) || {};
+            if (!roomsData[roomId]) {
+                roomsData[roomId] = { tickets: {} };
+            }
             let room = roomsData[roomId];
 
             if (userBalance < selectedPrice) {
-                alert('ባላንስዎ በቂ አይደለም! እባክዎን ዲፖዚት ያድርጉ።');
+                alert('ባላንስዎ በቂ አይደለም!');
                 return;
             }
 
@@ -319,104 +243,50 @@
                 return;
             }
 
+            // 1. ባላንስ መቀነስ
             userBalance -= selectedPrice;
             updateUserDataUI();
 
+            // 2. እጣ መመዝገብ
             room.tickets[selectedTicket] = { userId: currentUser.id, userName: currentUser.name };
-            if (!room.players.includes(currentUser.id)) {
-                room.players.push(currentUser.id);
-            }
+            let boughtCount = Object.keys(room.tickets).length;
 
-            if (room.players.length >= selectedRoomMaxPlayers) {
+            // 3. እጣ ማውጣት (የተያዙት እጣዎች ብዛት ከክፍሉ ከተወሰነው ብዛት ጋር ሲኩል)
+            if (boughtCount >= selectedRoomMaxPlayers) {
                 let boughtNumbers = Object.keys(room.tickets);
                 let shuffled = [...boughtNumbers].sort(() => 0.5 - Math.random());
-                let countToPick = Math.min(3, shuffled.length);
 
                 let totalPool = selectedPrice * selectedRoomMaxPlayers;
-                let p1stAmt = totalPool * 0.60;
-                let p2ndAmt = totalPool * 0.15;
-                let p3rdAmt = totalPool * 0.05;
+                let p1stAmt = Math.round(totalPool * 0.60);
+                let p2ndAmt = Math.round(totalPool * 0.15);
+                let p3rdAmt = Math.round(totalPool * 0.05);
 
-                let winners = [];
-                for (let i = 0; i < countToPick; i++) {
-                    let tNum = shuffled[i];
-                    let rank = i + 1;
-                    let prizeAmt = rank === 1 ? p1stAmt : (rank === 2 ? p2ndAmt : p3rdAmt);
-                    winners.push({ rank, ticketNumber: tNum, user: room.tickets[tNum], prize: prizeAmt });
-                }
+                let w1 = room.tickets[shuffled[0]];
+                let w2 = room.tickets[shuffled[1]] || w1;
+                let w3 = room.tickets[shuffled[2]] || w1;
 
-                let msg = `🎉 የዕጣው ውጤት ወጥቷል! አሸናፊዎች:\n\n`;
-                winners.forEach(w => {
-                    msg += `${w.rank}ኛ 🥇 👉 ${w.user.userName} (እጣ #${w.ticketNumber}) - ሽልማት: ${w.prize} ብር\n`;
-                });
-                alert(msg);
+                if (w1.userId === currentUser.id) userBalance += p1stAmt;
+                if (w2.userId === currentUser.id) userBalance += p2ndAmt;
+                if (w3.userId === currentUser.id) userBalance += p3rdAmt;
 
-                room.tickets = {};
-                room.players = [];
+                updateUserDataUI();
+
+                let resultMsg = `🎉 የዕጣው ውጤት አውቶማቲክ ወጥቷል! 🎉\n\n` +
+                                `🥇 1ኛ እጣ (እጣ #${shuffled[0]}): ${w1.userName} 👉 ${p1stAmt} ብር አሸንፈዋል!\n` +
+                                `🥈 2ኛ እጣ (እጣ #${shuffled[1]}): ${w2.userName} 👉 ${p2ndAmt} ብር አሸንፈዋል!\n` +
+                                `🥉 3ኛ እጣ (እጣ #${shuffled[2]}): ${w3.userName} 👉 ${p3rdAmt} ብር አሸንፈዋል!`;
+
+                alert(resultMsg);
+
+                // ክፍሉን እንደገና ባዶ ማድረግ
+                roomsData[roomId] = { tickets: {} };
             } else {
-                alert(`እጣ ቁጥር #${selectedTicket} በ ${selectedPrice} ብር በስኬት ተይዟል!`);
+                alert(`እጣ ቁጥር #${selectedTicket} በ ${selectedPrice} ብር በስኬት ተይዟል!\nየተያዙ እጣዎች: ${boughtCount}/${selectedRoomMaxPlayers}`);
             }
 
             localStorage.setItem('win_rooms', JSON.stringify(roomsData));
             selectedTicket = null;
             loadTicketGrid(roomId);
-        }
-
-        const depositNumbers = {
-            'telebirr': ['0967861982', '0991730780', '0910294984', '0922561527', '0942880547'],
-            'cbe_birr': ['0910294984', '0991730780', '0922561527'],
-            'cbe': ['1000260408937', '1000716384415'],
-            'boa': ['259221277']
-        };
-
-        function showDepositDetails() {
-            let method = document.getElementById('depositMethod').value;
-            let card = document.getElementById('depositDetailsCard');
-            if (!method) {
-                card.style.display = 'none';
-                return;
-            }
-
-            let numbersList = depositNumbers[method];
-            let key = 'rot_idx_' + method;
-            let currentIndex = parseInt(localStorage.getItem(key)) || 0;
-            
-            let assignedNumber = numbersList[currentIndex % numbersList.length];
-            localStorage.setItem(key, currentIndex + 1);
-
-            document.getElementById('rotatingAccountNumber').innerText = assignedNumber;
-            card.style.display = 'block';
-        }
-
-        function submitWithdraw() {
-            let amt = document.getElementById('wAmount').value;
-            let method = document.getElementById('wMethod').value;
-            let name = document.getElementById('wName').value;
-            let account = document.getElementById('wAccount').value;
-
-            if (!amt || !name || !account) {
-                alert('እባክዎን ሁሉንም መስኮች በትክክል ይሙሉ!');
-                return;
-            }
-
-            if (parseInt(amt) > userBalance) {
-                alert('የጠየቁት የብር መጠን ከባላንስዎ ይበልጣል!');
-                return;
-            }
-
-            let summary = `ማረጋገጫ (Confirm):\n\n` +
-                          `• ስም: ${name}\n` +
-                          `• ዘዴ: ${method}\n` +
-                          `• አካውንት/ስልክ: ${account}\n` +
-                          `• የብር መጠን: ${amt} ብር\n\n` +
-                          `መረጃዎቹ ትክክል መሆናቸውን አረጋግጠው Ok ይበሉ።`;
-
-            if (confirm(summary)) {
-                userBalance -= parseInt(amt);
-                updateUserDataUI();
-                alert('የማውጣት ጥያቄዎ በተሳካ ሁኔታ ተልቋል! በአጭር ጊዜ ውስጥ ወደ አካውንትዎ ይገባል።');
-                switchView('view-menu');
-            }
         }
     </script>
 </body>
