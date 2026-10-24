@@ -30,16 +30,17 @@
 </head>
 <body>
 
-    <!-- MAIN MENU VIEW (ቀጥታ የሚከፈተው ዋናው ገጽ) -->
-    <div id="view-menu" class="view active">
-        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <div id="menuUserName" style="font-weight: bold; font-size: 16px;">ተጫዋች</div>
-                <div id="menuUserBalance" style="color: #27ae60; font-size: 14px; font-weight: bold; margin-top: 4px;">ባላንስ: 0 ብር</div>
-            </div>
+    <!-- 🟢 ቋሚ የተጠቃሚ መረጃ እና ባላንስ ማሳያ (ሁልጊዜ ከላይ ይታያል) -->
+    <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div>
+            <div id="menuUserName" style="font-weight: bold; font-size: 16px;">ተጫዋች</div>
+            <div id="menuUserBalance" style="color: #27ae60; font-size: 14px; font-weight: bold; margin-top: 4px;">ባላንስ: 0 ብር</div>
         </div>
+    </div>
 
-        <h3 style="text-align: left; margin: 25px 0 10px 0;">ዋና ምረጭ</h3>
+    <!-- MAIN MENU VIEW -->
+    <div id="view-menu" class="view active">
+        <h3 style="text-align: left; margin: 10px 0 10px 0;">ዋና ምረጭ</h3>
         <div class="menu-grid">
             <div class="menu-btn" style="grid-column: span 2; background: #2980b9; color: white;" onclick="switchView('view-prices')">🎮 Play እጣ</div>
         </div>
@@ -87,14 +88,12 @@
         const tg = window.Telegram ? window.Telegram.WebApp : null;
         if (tg) tg.expand();
 
-        // ከቦቱ የሚመጣውን ባላንስ መቀበያ
         const urlParams = new URLSearchParams(window.location.search);
         const urlBal = urlParams.get('bal');
         if (urlBal !== null) {
             localStorage.setItem('win_balance', urlBal);
         }
 
-        // የቴሌግራም ተጠቃሚ መረጃን ማንበብ
         const tgUser = tg?.initDataUnsafe?.user;
         let currentUser = {
             id: tgUser ? tgUser.id : 'user-' + Math.floor(Math.random() * 10000),
@@ -107,7 +106,7 @@
         let selectedTicket = null;
 
         window.onload = function() {
-            switchView('view-menu'); // ቀጥታ ወደ ዋናው ሜኑ ይወስዳል
+            switchView('view-menu');
             updateUserDataUI();
         };
 
@@ -121,6 +120,13 @@
                 document.getElementById('menuUserName').innerText = currentUser.name;
                 document.getElementById('menuUserBalance').innerText = `ባላንስ: ${userBalance} ብር`;
                 localStorage.setItem('win_balance', userBalance);
+
+                // 🟢 አዲሱን ባላንስ ወደ ቴሌግራም ቦት መላክ
+                if (tg && tg.sendData) {
+                    try {
+                        tg.sendData(JSON.stringify({ type: 'update_balance', balance: userBalance }));
+                    } catch(e) {}
+                }
             }
         }
 
@@ -172,7 +178,7 @@
             document.getElementById('gamePoolInfo').innerText = `ጠቅላላ ገቢ (Pool): ${totalPool} ብር`;
             document.getElementById('gamePrizesInfo').innerHTML = 
                 `🥇 <b>1ኛ እጣ (60%):</b> ${p1st} ብር<br>` +
-                `🥈 <b>2ኛ እጣ (15%):</b> ${p2nd} ብр<br>` +
+                `🥈 <b>2ኛ እጣ (15%):</b> ${p2nd} ብር<br>` +
                 `🥉 <b>3ኛ እጣ (5%):</b> ${p3rd} ብር`;
 
             loadTicketGrid(roomId);
